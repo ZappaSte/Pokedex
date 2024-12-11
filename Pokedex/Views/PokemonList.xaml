@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Pokedex.Views.PokemonList" >
+    <ScrollView>
+        <StackLayout Orientation="Vertical">
+            <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand">
+                <!-- Username  -->
+                <Label x:Name="UsernameLabel" 
+                       Text="Username" 
+                       FontSize="25" 
+                       HorizontalOptions="StartAndExpand" 
+                       VerticalOptions="Center" 
+                       Margin="10,0,0,0" TextTransform="Uppercase"/>
+                <!-- Logout -->
+                <Button Text="LOGOUT" FontSize="12" FontAttributes="Bold" BackgroundColor="Red" TextColor="White"
+                    HorizontalOptions="End" VerticalOptions="Start" Clicked="OnLogoutButtonClicked" Margin="0,10,10,10"/>
+            </StackLayout>
+            
+            <!-- Titolo imposto come immagine-->
+            <Image Source="pokemon.png" VerticalOptions="Center" HorizontalOptions="Center"
+                   HeightRequest="80"/>
+
+            <!-- Filtrare la lista per la tipologia selezionata -->
+            <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand">
+                <Label Text="Filters:" 
+                       FontSize="25" 
+                       HorizontalOptions="StartAndExpand" 
+                       VerticalOptions="Center" 
+                       Margin="10,0,0,0"/>
+                <!-- Lista deli tipi recuperati -->
+                <Picker x:Name="OptionsFilters"
+                        Title="Type Pokemon"
+                        FontSize="18"
+                        Margin="0,0,10,0"
+                        SelectedIndexChanged="OptionsFilters_SelectedIndexChanged"/>
+            </StackLayout>
+
+            <!-- Cerca per nome il pokemon -->
+            <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand">
+                <Label Text="Search:" 
+                       FontSize="25" 
+                       HorizontalOptions="StartAndExpand" 
+                       VerticalOptions="Center" 
+                       Margin="10,0,0,0"/>
+                <Entry x:Name="boxSearch"
+                       Placeholder="Name Pokemon"
+                       FontSize="18"
+                       Margin="0,0,10,0"
+                       TextChanged="Search_TextChanged"/>
+            </StackLayout>
+
+            <!-- Lista dei Pokemon in base alla tipologia scelta -->
+            <ListView x:Name="ListPokemon" SelectionMode="None" VerticalOptions="FillAndExpand" RowHeight="100"
+                      ItemTapped="ListPokemon_ItemTapped">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <StackLayout Orientation="Vertical" Margin="10">
+                                <StackLayout Orientation="Horizontal">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="*" />
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="100" />
+                                            <ColumnDefinition Width="50" />
+                                            <ColumnDefinition Width="140" />
+                                            <ColumnDefinition Width="35" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <!-- Immagine Pokemon -->
+                                        <Image Source="{Binding UrlImg}" Grid.Row="0" Grid.Column="0" HeightRequest="70" WidthRequest="100"
+                                               VerticalOptions="Center"/>
+
+                                        <!--  Id Pokemon -->
+                                        <Label Text="{Binding Id}" Grid.Row="0" Grid.Column="1" VerticalTextAlignment="Center" Margin="10,0,5,0"
+                                                    FontSize="18" FontFamily="Super Morning" HorizontalTextAlignment="Start"/>
+
+                                        <!-- Nome Pokemon -->
+                                        <Label Text="{Binding Name}" Grid.Row="0" Grid.Column="2" VerticalTextAlignment="Center"
+                                                   FontSize="18" FontFamily="Super Morning" Padding="5" HorizontalOptions="Start"/>
+
+                                        <!--  Stella NON preferito, di DEFAULT visibile -->
+                                        <ImageButton Source="star.png" Grid.Row="0" Grid.Column="3" HeightRequest="30" WidthRequest="30"
+                                                     VerticalOptions="Center" HorizontalOptions="End" IsVisible="True"
+                                                     Clicked="imgStar_Clicked"/>
+                                        <!--  Stella preferito, di DEFAULT NON visibile -->
+                                        <ImageButton Source="star_yes.png" Grid.Row="0" Grid.Column="3" HeightRequest="30" WidthRequest="30"
+                                                     VerticalOptions="Center" HorizontalOptions="End" IsVisible="False"
+                                                     Clicked="imgStar_Clicked"/>
+                                    </Grid>
+                                </StackLayout>
+                            </StackLayout>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackLayout>
+    </ScrollView>
+</ContentPage>

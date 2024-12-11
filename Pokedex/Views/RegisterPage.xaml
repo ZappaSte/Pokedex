@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Pokedex.Views.RegisterPage"
+             Title="RegisterPage">
+    <StackLayout VerticalOptions="CenterAndExpand" Padding="20">
+        <Label Text="Register" FontSize="30" FontAttributes="Bold" HorizontalOptions="Center"/>
+        
+        <!-- Inserisci Username -->
+        <Entry x:Name="Username" Placeholder="Username" FontSize="18" Margin="0,10" />
+
+        <!-- Inserisci Password -->
+        <Entry x:Name="Password" Placeholder="Password" FontSize="18" Margin="0,10" IsPassword="True" />
+
+        <!-- Conferma Password inserita -->
+        <Entry x:Name="ConfirmPassword" Placeholder="Confirm Password" FontSize="18" Margin="0,10" IsPassword="True" />
+
+        <!-- Bottone per confermare la registrazione -->
+        <Button Text="REGISTER" FontSize="20" FontAttributes="Bold" Margin="0,20" 
+                Clicked="OnRegisterButtonClicked" Background="Green"/>
+    </StackLayout>
+</ContentPage>
