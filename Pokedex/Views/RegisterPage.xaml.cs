@@ -5,7 +5,7 @@ namespace Pokedex.Views;
 
 public partial class RegisterPage : ContentPage
 {
-    private string RegisterUrl = "http://192.168.1.14:5000/register";
+    private string RegisterUrl = "http://192.168.1.34:5000/register";
 
     public RegisterPage()
 	{

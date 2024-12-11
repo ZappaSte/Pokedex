@@ -9,10 +9,10 @@ namespace Pokedex
             InitializeComponent();
 
             // Imposta una schermata di caricamento come pagina iniziale
-            MainPage = new NavigationPage(new LoadingPage());
+            MainPage = new NavigationPage(new LoginPage());
 
             // Controlla il token
-            CheckTokenAsync();
+            //CheckTokenAsync();
         }
 
         private async void CheckTokenAsync()
@@ -37,7 +37,7 @@ namespace Pokedex
                     // Se il token è valido, mostra la pagina di lista Pokémon
                     MainPage = new NavigationPage(new PokemonList());
                 }
-                else
+                else      
                 {
                     // Se il token non è valido, mostra la pagina di login
                     MainPage = new NavigationPage(new LoginPage());
@@ -59,7 +59,7 @@ namespace Pokedex
                 client.DefaultRequestHeaders.Authorization =
                     new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
-                var response = await client.GetAsync("http://192.168.1.14:5000/verify-token");
+                var response = await client.GetAsync("http://192.168.1.34:5000/verify-token");
 
                 // Considera valido il token se il server restituisce 200 OK
                 return response.IsSuccessStatusCode;

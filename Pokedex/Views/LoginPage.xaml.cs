@@ -73,7 +73,7 @@ public partial class LoginPage : ContentPage
                 var result = JsonConvert.DeserializeObject<LoginApiModel>(responseContent);
 
                 // Salva il token per restare connesso
-                await SecureStorage.SetAsync("authToken", result.Token);
+                //await SecureStorage.SetAsync("authToken", result.Token);
 
                 // Salva nome utente
                 await SecureStorage.SetAsync("username", username);
