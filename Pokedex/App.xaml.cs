@@ -1,4 +1,6 @@
 ﻿using Pokedex.Views;
+using Pokedex.Models;
+using Pokedex.Services;
 
 namespace Pokedex
 {
@@ -12,6 +14,8 @@ namespace Pokedex
             MainPage = new NavigationPage(new PokemonList());
 
         }
+
+        public static PokedexApi GetPokemonApi() => MauiProgram.serviceProvider.GetService<PokedexApi>();
 
     }
 }

@@ -1,9 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
+using Pokedex.Services;
 
 namespace Pokedex
 {
     public static class MauiProgram
     {
+        public static IServiceProvider serviceProvider;
         public static MauiApp CreateMauiApp()
         {
             var builder = MauiApp.CreateBuilder();
@@ -15,11 +17,14 @@ namespace Pokedex
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
 
+            var services = new ServiceCollection();
+            services.AddSingleton<IPokedexApi, PokedexApi>();
+            serviceProvider = services.BuildServiceProvider();
 #if DEBUG
     		builder.Logging.AddDebug();
 #endif
 
-            var services = new ServiceCollection();
+            // var services = new ServiceCollection();
             return builder.Build();
         }
     }

@@ -4,6 +4,8 @@ using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
 using Pokedex.Models;
 using Pokedex.Views;
+using Pokedex.Services;
+
 
 namespace Pokedex.ViewModel;
 
@@ -96,6 +98,8 @@ public class PokemonListViewModel : INotifyPropertyChanged
             }
             try
             {
+                var a = App.GetPokemonApi;
+                int b = 0;
                 // HttpClient http = new HttpClient();
                 // var response = await http.GetAsync(Url + _set.ToString());
                 
