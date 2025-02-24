@@ -2,7 +2,6 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
 using Pokedex.Models;
-using Xamarin.Google.Crypto.Tink.Signature;
 
 namespace Pokedex.ViewModel;
 
@@ -23,42 +22,34 @@ public class PokemonDetailViewModel : INotifyPropertyChanged
 			OnPropertyChanged(nameof(Model));
 		}
 	}
-
+	
 	public PokemonDetailViewModel(PokemonModel selectPokemon)
 	{
-		string UrlPokemon = "https://pokeapi.co/api/v2/pokemon/" + selectPokemon.Id + "/";
-
-		_ = GetPokemonDetails(UrlPokemon, selectPokemon);
+		_ = GetPokemonDetails(selectPokemon);
 	}
 
-	public async Task GetPokemonDetails(string UrlPokemon, PokemonModel selectPokemon)
+    //Funzione che ritorna la lista di pokemon con l'aggiunta di tutti i dettagli
+	public async Task GetPokemonDetails(PokemonModel selectPokemon)
 	{
-		HttpClient http = new HttpClient();
-		var response = await http.GetAsync(UrlPokemon);
-
-		if (response.IsSuccessStatusCode)
-		{
-			var respStringPokemon = await response.Content.ReadAsStringAsync();
-			var jsonPokemon = JsonConvert.DeserializeObject<PokemonDetailsModel>(respStringPokemon);
-
-			Model = new PokemonModel();
-
-			selectPokemon.Height = jsonPokemon.Height.ToString();
-			selectPokemon.Weight = jsonPokemon.Weight.ToString();
-			selectPokemon.AbilitieList = jsonPokemon.Abilities;
-			selectPokemon.Stats = jsonPokemon.Stats;
-			selectPokemon.MoveList = jsonPokemon.Moves;
-
-			SetTypeColor(selectPokemon);
-
-			Model = selectPokemon;
-		}
-		else
-		{
-			MainThread.BeginInvokeOnMainThread(async () =>
-				await Application.Current.MainPage.DisplayAlert("Errore", "Impossibile recuperare i dettagli del Pok�mon", "OK")
-			);
-		}
+		try
+        {
+            var result = await App.GetPokemonApi().GetDetailsPokemon(selectPokemon);
+            if (result != null)
+            {
+				SetTypeColor(selectPokemon);
+                Model = result;
+            }
+            else
+            {
+                MainThread.BeginInvokeOnMainThread(async () =>
+                        await Application.Current.MainPage.DisplayAlert("Errore", "Impossibile recuperare i dettagli del pokemom", "OK")
+                        );
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Errore in GetDetailsPokemon: {ex.Message}");
+        }
 	}
 
 	//Funzione che assegna un colore in base al Type del Pokemon
@@ -131,6 +122,4 @@ public class PokemonDetailViewModel : INotifyPropertyChanged
 
 	public void OnPropertyChanged([CallerMemberName] string name = "") =>
 		PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-
-
 }

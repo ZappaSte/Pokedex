@@ -9,7 +9,9 @@ public interface IPokedexApi
 
     Task <string> GetImgPokemon(string namePokemon);
 
-    Task <List<TypeModel>> GetTypesPokemon(int idPokemon);
+    Task <PokemonModel> GetTypesPokemon(PokemonModel pm);
 
-    Task <List<PokemonDetailsModel>> GetDetailsPokemon(int idPokemon);
+    Task <List<string>> GetTypes();
+
+    Task <PokemonModel> GetDetailsPokemon(PokemonModel pm);
 }

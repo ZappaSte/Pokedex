@@ -15,7 +15,7 @@ namespace Pokedex
 
         }
 
-        public static PokedexApi GetPokemonApi() => MauiProgram.serviceProvider.GetService<PokedexApi>();
+        public static IPokedexApi GetPokemonApi() => MauiProgram.serviceProvider.GetService<IPokedexApi>();
 
     }
 }
