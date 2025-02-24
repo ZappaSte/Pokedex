@@ -2,21 +2,22 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Pokedex.Views.PokemonDetail" 
-             x:Name="cpPokemonDetail" Loaded="ContentPage_Loaded">
+             x:Name="cpPokemonDetail">
     <ScrollView>
         <StackLayout Padding="20">
-            <Grid HeightRequest="200" HorizontalOptions="FillAndExpand">
+            <Grid HeightRequest="200" HorizontalOptions="Fill" Background="{Binding Model.TypeColor}">
                 <!-- Sfondo immagine, sfumatura dal basso verso l'alto -->
-                <BoxView>
+                <!-- <BoxView>
                     <BoxView.Background>
-                        <LinearGradientBrush StartPoint="0,1" EndPoint="0,0">
-                            <GradientStop x:Name="Sfumatura" Color="Black" Offset="0.0" />
+                        <LinearGradientBrush StartPoint="0,1" EndPoint="0,0" >
+                            <GradientStop x:Name="Sfumatura" Color="{Binding Model.TypeColor}" Offset="0.0" />
                             <GradientStop Color="Transparent" Offset="1.0" />
                         </LinearGradientBrush>
                     </BoxView.Background>
-                </BoxView>
+                </BoxView> -->
+
                 <!-- Immagine del Pokemon -->
-                <Image Source="{Binding UrlImg}" HeightRequest="200" HorizontalOptions="Center" />
+                <Image Source="{Binding Model.UrlImg}" HeightRequest="200" HorizontalOptions="Center" />
             </Grid>
             <Grid >
                 <Grid.RowDefinitions>
@@ -33,36 +34,36 @@
                 </Grid.ColumnDefinitions>
                 <!-- Id Pokemon -->
                 <Label Text="ID:" FontSize="20" FontAttributes="Bold" Grid.Row="0" Grid.Column="0"/>
-                <Label Text="{Binding Id}" FontSize="18" Grid.Row="0" Grid.Column="1"/>
+                <Label Text="{Binding Model.Id}" FontSize="18" Grid.Row="0" Grid.Column="1"/>
                 
                 <!--  Nome Pokemon -->
                 <Label Text="Name:" FontSize="20" FontAttributes="Bold" Grid.Row="1" Grid.Column="0"/>
-                <Label Text="{Binding Name}" FontSize="18" Grid.Row="1" Grid.Column="1"/>
+                <Label Text="{Binding Model.Name}" FontSize="18" Grid.Row="1" Grid.Column="1"/>
                 
                 <!-- Tipi Pokemon -->
                 <Label Text="Types:" FontSize="20" FontAttributes="Bold" Grid.Row="2" Grid.Column="0"/>
-                <Label Text="{Binding Types}" FontSize="18" Grid.Row="2" Grid.Column="1"/>
+                <Label Text="{Binding Model.Types}" FontSize="18" Grid.Row="2" Grid.Column="1"/>
                 
                 <!--  Altezza Pokemon -->
                 <Label Text="Height:" FontSize="20" FontAttributes="Bold" Grid.Row="3" Grid.Column="0"/>
-                <Label Text="{Binding Height}" FontSize="18" Grid.Row="3" Grid.Column="1"/>
+                <Label Text="{Binding Model.Height}" FontSize="18" Grid.Row="3" Grid.Column="1"/>
                 
                 <!--  Peso Pokemon -->
                 <Label Text="Weight:" FontSize="20" FontAttributes="Bold" Grid.Row="4" Grid.Column="0"/>
-                <Label Text="{Binding Weight}" FontSize="18" Grid.Row="4" Grid.Column="1" />
+                <Label Text="{Binding Model.Weight}" FontSize="18" Grid.Row="4" Grid.Column="1" />
 
                 <!--  Abilità Pokemon -->
                 <Label Text="Abilities:" FontSize="20" FontAttributes="Bold" Grid.Row="5" Grid.Column="0"/>
-                <Label Text="{Binding Abilities}" FontSize="18" Grid.Row="5" Grid.Column="1"/>
+                <Label Text="{Binding Model.Abilities}" FontSize="18" Grid.Row="5" Grid.Column="1"/>
             </Grid>
 
             <!--  Stato Pokemon -->
             <Label Text="Stats:" FontSize="20" FontAttributes="Bold" />
-            <Label Text="{Binding StatsList}" FontSize="18" />
+            <Label Text="{Binding Model.StatsList}" FontSize="18" />
 
             <!--  Mosse possibili Pokemon -->
             <Label Text="Moves:" FontSize="20" FontAttributes="Bold" />
-            <Label Text="{Binding Moves}" FontSize="18" />
+            <Label Text="{Binding Model.Moves}" FontSize="18" />
         </StackLayout>
     </ScrollView>
 </ContentPage>

@@ -19,6 +19,7 @@ namespace Pokedex
     		builder.Logging.AddDebug();
 #endif
 
+            var services = new ServiceCollection();
             return builder.Build();
         }
     }

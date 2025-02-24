@@ -35,6 +35,10 @@ namespace Pokedex.Models
         ? string.Join(", ", TypeList.Select(t => t.Type.Name))
         : string.Empty;
 
+        //Colore Tipologia del Pokemon
+        [JsonProperty("typeColor")]
+        public Color TypeColor { get; set; }
+
         //Altezza del Pokemon
         [JsonProperty("height")]
         public string Height { get; set; }
@@ -63,5 +67,10 @@ namespace Pokedex.Models
         public string Moves => MoveList != null
         ? string.Join(", ", MoveList.Select(m => m.MoveMove.Name))
         : string.Empty;
+
+        public static implicit operator List<object>(PokemonModel v)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
