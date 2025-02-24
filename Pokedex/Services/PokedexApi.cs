@@ -1,8 +1,8 @@
 using System;
 using Pokedex.Models;
 
-namespace Pokedex.Services
-{
+namespace Pokedex.Services;
+
 public class PokedexApi : IPokedexApi
 {
     HttpClient http = new HttpClient();
@@ -53,5 +53,4 @@ public class PokedexApi : IPokedexApi
         // return new List<PokemonDetailsModel>();
     }
 
-}
 }
