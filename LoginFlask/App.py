@@ -19,7 +19,7 @@ jwt = JWTManager(app)
 CORS(app)  
 
 # Configurazione dell'app per il database SQLite
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///C:/_SORGENTI_/Pokedex/site.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////Users/szappasodi/Projects/Pokedex/Pokedex/site.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JWT_SECRET_KEY'] = 'your_jwt_secret_key'  # Usa una chiave segreta per JWT
 
@@ -35,11 +35,17 @@ class User(db.Model):
 
     # Metodo per impostare la password (salvata come hash)
     def set_password(self, password):
-        self.password_hash = generate_password_hash(password)
+        # self.password_hash = generate_password_hash(password)
+        from werkzeug.security import pbkdf2_hex
+        self.password_hash = pbkdf2_hex(password, salt='somesalt', iterations=100000)
 
     # Metodo per verificare la password
     def check_password(self, password):
-        return check_password_hash(self.password_hash, password)
+        # return check_password_hash(self.password_hash, password)
+        if pbkdf2_hex(password, salt='somesalt', iterations=100000) == self.password_hash:
+            return True
+        else:
+            return False
 
 # Gestire Errore per l'icona del sito
 @app.route('/favicon.ico')
@@ -51,12 +57,12 @@ def favicon():
 def home():
     return "Welcome to the Pokemon Login API!"
 
-# Rotta per verificare la validità di un token JWT
+# Rotta per verificare la validitï¿½ di un token JWT
 @app.route('/verify-token', methods=['GET'])
 @jwt_required()
 
 def verify_token():
-    current_user = get_jwt_identity() # Ottiene l'identità dell'utente dal token JWT
+    current_user = get_jwt_identity() # Ottiene l'identitï¿½ dell'utente dal token JWT
     return jsonify({"msg": "Token is valid", "user": current_user}), 200 # Risposta positiva
 
 # Rotta per la registrazione di un nuovo utente
@@ -70,7 +76,7 @@ def register():
     username = data.get('username')
     password = data.get('password')
     
-    # Controlla se l'utente esiste già
+    # Controlla se l'utente esiste giï¿½
     if User.query.filter_by(username=username).first():
         return jsonify({"msg": "User already exists"}), 400
 
@@ -95,7 +101,7 @@ def login():
 
     # Verifica le credenziali dell'utente
     user = User.query.filter_by(username=username).first()
-    if user and user.check_password(password): # Controlla se l'utente esiste e la password è corretta
+    if user and user.check_password(password): # Controlla se l'utente esiste e la password ï¿½ corretta
         access_token = create_access_token(identity=user.username) # Crea un token di accesso
         return jsonify({"access_token": access_token}), 200 # Restituisce il token
 
@@ -106,4 +112,4 @@ def login():
 if __name__ == '__main__':
     with app.app_context():  # Crea il contesto dell'app
         db.create_all()  # Crea le tabelle nel database se non esistono
-    app.run(host="0.0.0.0", port=5000, debug=True) # Avvia il server Flask
+    app.run(host="0.0.0.0", port=80, debug=True) # Avvia il server Flask

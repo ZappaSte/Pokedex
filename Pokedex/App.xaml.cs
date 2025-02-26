@@ -11,7 +11,9 @@ namespace Pokedex
             InitializeComponent();
 
             // Imposta una schermata di caricamento come pagina iniziale
-            MainPage = new NavigationPage(new PokemonList());
+            // MainPage = new NavigationPage(new PokemonList());
+            MainPage = new NavigationPage(new LoginPage());
+
 
         }
         public static IPokedexApi GetPokemonApi() => MauiProgram.serviceProvider.GetService<IPokedexApi>();
