@@ -22,34 +22,41 @@ public class PokemonDetailViewModel : INotifyPropertyChanged
 			OnPropertyChanged(nameof(Model));
 		}
 	}
-	
+
 	public PokemonDetailViewModel(PokemonModel selectPokemon)
 	{
 		_ = GetPokemonDetails(selectPokemon);
 	}
 
-    //Funzione che ritorna la lista di pokemon con l'aggiunta di tutti i dettagli
+	//Funzione che ritorna la lista di pokemon con l'aggiunta di tutti i dettagli
 	public async Task GetPokemonDetails(PokemonModel selectPokemon)
 	{
 		try
-        {
-            var result = await App.GetPokemonApi().GetDetailsPokemon(selectPokemon);
-            if (result != null)
-            {
+		{
+			var result = await App.GetPokemonApi().GetDetailsPokemon(selectPokemon);
+			if (result != null)
+			{
 				SetTypeColor(selectPokemon);
-                Model = result;
-            }
-            else
-            {
-                MainThread.BeginInvokeOnMainThread(async () =>
-                        await Application.Current.MainPage.DisplayAlert("Errore", "Impossibile recuperare i dettagli del pokemom", "OK")
-                        );
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Errore in GetDetailsPokemon: {ex.Message}");
-        }
+
+				// var cacheDirectory = FileSystem.CacheDirectory;
+				// var cacheFilePath = Path.Combine(cacheDirectory, result.Name + ".jpg");
+				// var _imgBytes = await File.ReadAllBytesAsync(cacheFilePath);
+				// var stream = new MemoryStream(_imgBytes);
+				// result.Img = ImageSource.FromStream(() => stream);
+				
+				Model = result;
+			}
+			else
+			{
+				MainThread.BeginInvokeOnMainThread(async () =>
+						await Application.Current.MainPage.DisplayAlert("Errore", "Impossibile recuperare i dettagli del pokemom", "OK")
+						);
+			}
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine($"Errore in GetDetailsPokemon: {ex.Message}");
+		}
 	}
 
 	//Funzione che assegna un colore in base al Type del Pokemon

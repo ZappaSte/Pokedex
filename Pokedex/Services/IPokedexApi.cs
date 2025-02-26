@@ -7,7 +7,7 @@ public interface IPokedexApi
 {
     Task <List<PokemonModel>> GetPokemon(int offset);
 
-    Task <string> GetImgPokemon(string namePokemon);
+    Task <byte[]> SaveAndGetImgPokemon(PokemonModel pm);
 
     Task <PokemonModel> GetTypesPokemon(PokemonModel pm);
 

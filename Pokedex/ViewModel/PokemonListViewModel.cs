@@ -12,11 +12,11 @@ namespace Pokedex.ViewModel;
 public class PokemonListViewModel : INotifyPropertyChanged
 {
     public event PropertyChangedEventHandler PropertyChanged;
-    
+
     private bool _isBusy = false; //Controllo per vedere se non è gia stata effettuata la chiamata per visualizzare altri pokemon
     private bool _isFirst = true; //Controllo se è òla prima chiamata che effettuo o meno
     private int _set = 0; //Contatore che si incrementa per visualizzare i pokemon 20 alla volta
-    
+
     private ObservableCollection<PokemonModel> _modelList = [];
     public ObservableCollection<PokemonModel> ModelList
     {
@@ -69,8 +69,8 @@ public class PokemonListViewModel : INotifyPropertyChanged
             OnPropertyChanged(nameof(NotLoad));
         }
     }
-    
-    
+
+
     public PokemonListViewModel()
     {
         _ = GetPokemon();
@@ -95,7 +95,31 @@ public class PokemonListViewModel : INotifyPropertyChanged
                     foreach (var p in result)
                     {
                         var pokemon = await App.GetPokemonApi().GetTypesPokemon(p);
-                        if(pokemon.Types != null) ModelList.Add(pokemon);
+                        if (pokemon.Types != null)
+                        {
+                            // var _imgBytes = await App.GetPokemonApi().SaveAndGetImgPokemon(p);
+
+                            // //Percorso dei file nella cache
+                            // var cacheDirectory = FileSystem.CacheDirectory;
+                            // var cacheFilePath = Path.Combine(cacheDirectory, pokemon.Name + ".jpg");
+
+                            // //Verifico se esiste o meno
+                            // if (!File.Exists(cacheFilePath))
+                            // {
+                            //     await File.WriteAllBytesAsync(cacheFilePath, _imgBytes);
+                            // }
+                            // else
+                            // {
+                            //     _imgBytes = await File.ReadAllBytesAsync(cacheFilePath);
+                            // }
+
+                            // //Recupero l'image
+                            // var stream = new MemoryStream(_imgBytes);
+                            // pokemon.Img = ImageSource.FromStream(() => stream);
+                            
+                            // if (pokemon.Img != null)
+                            ModelList.Add(pokemon);
+                        }
                     }
 
                     NotLoad = false;

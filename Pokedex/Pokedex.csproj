@@ -24,7 +24,7 @@
 		<ApplicationTitle>Pokedex</ApplicationTitle>
 
 		<!-- App Identifier -->
-		<ApplicationId>com.companyname.pokedex</ApplicationId>
+		<ApplicationId>it.inim.dev</ApplicationId>
 
 		<!-- Versions -->
 		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>

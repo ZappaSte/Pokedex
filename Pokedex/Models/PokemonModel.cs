@@ -25,6 +25,10 @@ namespace Pokedex.Models
         //Url contente l'immagine specifica
         [JsonProperty("urlImg")]
         public string UrlImg { get; set; }
+
+        //Immagine specifica
+        [JsonProperty("img")]
+        public ImageSource Img { get; set; }
         
         //Una lista contentente con .Name il tipo del pokemon
         //Un Pokemon puo avere più di un tipo

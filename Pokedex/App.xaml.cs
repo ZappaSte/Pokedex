@@ -14,7 +14,6 @@ namespace Pokedex
             MainPage = new NavigationPage(new PokemonList());
 
         }
-
         public static IPokedexApi GetPokemonApi() => MauiProgram.serviceProvider.GetService<IPokedexApi>();
 
     }
