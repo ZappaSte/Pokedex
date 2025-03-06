@@ -5,22 +5,50 @@
              x:Name="cpPokemonList">
     <Grid Margin="10,50,10,50">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="80"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <!-- Titolo imposto come immagine-->
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <!-- Username  -->
+            <Label x:Name="UsernameLabel"
+                   Text="Username"
+                   FontSize="25"
+                   Margin="10,15,0,0"
+                   TextTransform="Uppercase"
+                   Grid.Column="0"/>
+            <!-- Logout -->
+            <Button Text="LOGOUT"
+                    FontSize="12"
+                    FontAttributes="Bold"
+                    BackgroundColor="Red"
+                    TextColor="White"
+                    Clicked="OnLogoutButtonClicked"
+                    Margin="10"
+                    MaximumWidthRequest="100"
+                    HorizontalOptions="End"
+                    Grid.Column="1"/>
+        </Grid>
+
+
         <Image Source="pokemon.png"
                VerticalOptions="Center"
                HorizontalOptions="Center"
                HeightRequest="80"
-               Grid.Row="0"/>
-
+               Grid.Row="1"/>
         <!-- Filtrare la lista per la tipologia selezionata -->
         <StackLayout Orientation="Horizontal"
                      HorizontalOptions="Fill"
-                     Grid.Row="1"
+                     Grid.Row="2"
                      Margin="0,10,0,5">
             <Label Text="Filters:"
                    FontSize="25"
@@ -39,7 +67,7 @@
         <!-- Cerca per nome il pokemon -->
         <StackLayout Orientation="Horizontal"
                      HorizontalOptions="Fill"
-                     Grid.Row="2"
+                     Grid.Row="3"
                      Margin="0,5,0,10">
             <Label Text="Search:"
                    FontSize="25"
@@ -52,20 +80,40 @@
                    Margin="12,0,10,0"
                    TextChanged="Entry_Search_TextChanged"/>
         </StackLayout>
-
+        
+        <!-- Visualizzo i miei preferiti -->
+        <StackLayout Orientation="Horizontal"
+                     HorizontalOptions="Fill"
+                     Grid.Row="4"
+                     Margin="0,5,0,10">
+            <Label Text="My favorites pokemon:"
+                   FontSize="25"
+                   HorizontalOptions="Start"
+                   VerticalOptions="Center"
+                   Margin="10,0,0,0"/>
+            <CheckBox x:Name="cbFavorites"
+                      Margin="12,0,10,0"
+                      CheckedChanged="CbFavorites_OnCheckedChanged"/>
+        </StackLayout>
+        
+        <!-- Visualizzo messaggi-->
+            <Label x:Name="MessageLabel" Text="{Binding Message}" TextColor="Red" IsVisible="False"
+                   HorizontalOptions="Center" FontSize="20" Margin="0,20" FontAttributes="Bold" Grid.Row="5"/>
+        
         <!-- Lista dei Pokemon in base alla tipologia scelta -->
         <ActivityIndicator IsRunning="{Binding NotLoad}"
                            Color="Red"
-                           Grid.Row="3"
-                           Margin="150,200"/>
+                           Grid.Row="5"
+                           Margin="150,10"/>
 
         <CollectionView x:Name="ListPokemon"
                         SelectionMode="None"
                         VerticalOptions="Fill"
                         ItemsSource="{Binding ModelListTemp}"
-                        RemainingItemsThresholdReachedCommand="{Binding RemaingItemCommand, Source={x:Reference cpPokemonList}}"
-                        RemainingItemsThreshold="3"
-                        Grid.Row="3">
+                        
+                        Grid.Row="6">
+            <!-- RemainingItemsThresholdReachedCommand="{Binding RemaingItemCommand, Source={x:Reference cpPokemonList}}" -->
+            <!-- RemainingItemsThreshold="3" -->
             <CollectionView.ItemTemplate>
                 <DataTemplate>
                     <StackLayout Orientation="Vertical"
@@ -83,8 +131,10 @@
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="100"/>
                                     <ColumnDefinition Width="50"/>
-                                    <ColumnDefinition Width="140"/>
-                                    <ColumnDefinition Width="35"/>
+                                    <ColumnDefinition Width="160"/>
+                                    <ColumnDefinition Width="25"/>
+                                    <ColumnDefinition Width="25"/>
+                                    <ColumnDefinition Width="25"/>
                                 </Grid.ColumnDefinitions>
 
                                 <!-- Immagine Pokemon -->
@@ -114,32 +164,34 @@
                                        Padding="5"
                                        HorizontalOptions="Start"/>
 
-                                <!--  Stella NON preferito, di DEFAULT visibile -->
-                                <ImageButton Source="star.png"
+                                <!--  Aggiungi preferito -->
+                                <Button Text="+"
                                              Grid.Row="0"
                                              Grid.Column="3"
                                              HeightRequest="30"
                                              WidthRequest="30"
                                              VerticalOptions="Center"
                                              HorizontalOptions="End"
-                                             IsVisible="True"
-                                             Clicked="imgStar_Clicked"/>
-                                <!--  Stella preferito, di DEFAULT NON visibile -->
-                                <ImageButton Source="star_yes.png"
-                                             Grid.Row="0"
-                                             Grid.Column="3"
-                                             HeightRequest="30"
-                                             WidthRequest="30"
-                                             VerticalOptions="Center"
-                                             HorizontalOptions="End"
-                                             IsVisible="False"
-                                             Clicked="imgStar_Clicked"/>
+                                             Command="{Binding AddPokemonCommand, Source={x:Reference cpPokemonList}}"
+                                             CommandParameter="{Binding .}">
+                                </Button>
+                                
+                                <!--  Remove preferito -->
+                                <Button Text="-"
+                                        Grid.Row="0"
+                                        Grid.Column="5"
+                                        HeightRequest="30"
+                                        WidthRequest="30"
+                                        VerticalOptions="Center"
+                                        HorizontalOptions="End"
+                                        Command="{Binding RemovePokemonCommand, Source={x:Reference cpPokemonList}}"
+                                        CommandParameter="{Binding .}">
+                                </Button>
                             </Grid>
                         </StackLayout>
                     </StackLayout>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
-
     </Grid>
 </ContentPage>

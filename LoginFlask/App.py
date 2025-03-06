@@ -35,17 +35,19 @@ class User(db.Model):
 
     # Metodo per impostare la password (salvata come hash)
     def set_password(self, password):
-        # self.password_hash = generate_password_hash(password)
-        from werkzeug.security import pbkdf2_hex
-        self.password_hash = pbkdf2_hex(password, salt='somesalt', iterations=100000)
+        self.password_hash = generate_password_hash(password, method='pbkdf2:sha256')
 
     # Metodo per verificare la password
     def check_password(self, password):
-        # return check_password_hash(self.password_hash, password)
-        if pbkdf2_hex(password, salt='somesalt', iterations=100000) == self.password_hash:
-            return True
-        else:
-            return False
+        return check_password_hash(self.password_hash, password)
+    
+#Definizione del modello per la tabella Preferiti nel database
+class Favorite(db.Model):
+    id = db.Column(db.Integer, primary_key=True) # Identificativo univoco
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False) # Riferimento all'utente
+    pokemon_id = db.Column(db.Integer, nullable=False) # Riferimento al pokemon
+
+    user = db.relationship('User', backref=db.backref('favorites', lazy=True))
 
 # Gestire Errore per l'icona del sito
 @app.route('/favicon.ico')
@@ -107,6 +109,67 @@ def login():
 
     return jsonify({"msg": "Invalid username or password"}), 401 # Credenziali non valide
 
+# Rotta per aggiungere un preferito
+@app.route('/add-favorite', methods=['POST'])
+@jwt_required()
+def add_favorite():
+    # Gestisce richieste POST
+    data = request.get_json() # Recupera i dati JSON dalla richiesta
+    pokemon_id = data.get('pokemon_id')
+
+    current_user = get_jwt_identity() # Ottienil'utente dal JWT
+    user = User.query.filter_by(username=current_user).first()
+
+    if not user:
+        return jsonify({"msg": "User not found"}), 404
+
+    #Verifico se il preferito è già stato aggiunto
+    existing_favorite = Favorite.query.filter_by(user_id=user.id, pokemon_id=pokemon_id).first()
+    if existing_favorite:
+        return jsonify({"msg": "Pokemon is already in favorites"}), 400
+    
+    # Aggiungi il preferito
+    favorite = Favorite(user_id=user.id, pokemon_id=pokemon_id)
+    db.session.add(favorite)
+    db.session.commit()
+
+    return jsonify({"msg": "Favorite added successfully"}), 200
+
+# Rotta per rimuovere un preferito
+@app.route('/remove-favorite', methods=['POST'])
+@jwt_required()
+def remove_favorite():
+    # Gestisce richieste POST
+    data = request.get_json() # Recupera i dati JSON dalla richiesta
+    pokemon_id = data.get('pokemon_id')
+
+    current_user = get_jwt_identity() # Ottienil'utente dal JWT
+    user = User.query.filter_by(username=current_user).first()
+
+    if not user:
+        return jsonify({"msg": "User not found"}), 404
+
+    #Rimuovi il preferito
+    favorite = Favorite.query.filter_by(user_id=user.id, pokemon_id=pokemon_id).first()
+    if not favorite:
+        return jsonify({"msg": "Pokemon not found favorites"}), 404
+    
+    db.session.delete(favorite)
+    db.session.commit()
+
+    return jsonify({"msg": "Favorite removed successfully"}), 200
+
+# Rotta per ottenere i preferiti di un utente
+@app.route('/favorites', methods=['GET'])
+@jwt_required()
+def favorites():
+    current_user = get_jwt_identity() # Ottienil'utente dal JWT
+    user = User.query.filter_by(username=current_user).first()
+
+    favorites = Favorite.query.filter(Favorite.user_id == user.id).order_by(Favorite.pokemon_id).all()
+    favorite_pokemon = [favorite.pokemon_id for favorite in favorites]
+
+    return jsonify(favorite_pokemon), 200
 
 # Punto di avvio dell'applicazione
 if __name__ == '__main__':

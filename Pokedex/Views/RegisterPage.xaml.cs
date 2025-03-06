@@ -1,15 +1,21 @@
 using Newtonsoft.Json;
+using Pokedex.ViewModel;
 using System.Text;
 
 namespace Pokedex.Views;
 
 public partial class RegisterPage : ContentPage
 {
-    private string RegisterUrl = "http://10.105.200.172:80/register";
+    public RegisterPageViewModel _viewModel;
+    
+    private bool _registerSuccess;
 
     public RegisterPage()
 	{
 		InitializeComponent();
+
+        _viewModel = new RegisterPageViewModel();
+        BindingContext = _viewModel;
 	}
 
     private async void OnRegisterButtonClicked(object sender, EventArgs e)
@@ -18,44 +24,19 @@ public partial class RegisterPage : ContentPage
         string password = Password.Text; //Recupero Password
         string confirmPassword = ConfirmPassword.Text; //Recupero Conferma Password
 
-        //I campi devono essere inseriti
-        if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+        if (_viewModel != null)
         {
-            await DisplayAlert("Error", "Please fill all fields.", "OK");
-            return;
-        }
+            _registerSuccess = await _viewModel.RegisterClicked(username, password, confirmPassword);
 
-        //Le due password devono coincidere
-        if (password != confirmPassword)
-        {
-            await DisplayAlert("Error", "Passwords do not match.", "OK");
-            return;
-        }
-
-        HttpClient client = new HttpClient();
-
-        try
-        {
-            var credentials = new { username, password };
-            string json = JsonConvert.SerializeObject(credentials);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-            var response = await client.PostAsync(RegisterUrl, content);
-
-            if (response.IsSuccessStatusCode)
+            if (_registerSuccess)
             {
                 await DisplayAlert("Success", "Registration successful! You can now login.", "OK");
                 await Navigation.PopAsync(); // Torna alla pagina di login
             }
             else
             {
-                var errorContent = await response.Content.ReadAsStringAsync();
-                await DisplayAlert("Error", $"Server error: {response.StatusCode}\n{errorContent}", "OK");
+                ErrorLabel.IsVisible = true;                
             }
-        }
-        catch (Exception ex)
-        {
-            await DisplayAlert("Error", $"An error occurred: {ex.Message}", "OK");
-        }
+        }        
     }
 }

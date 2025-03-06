@@ -2,13 +2,15 @@ using System;
 using Pokedex.Models;
 using Newtonsoft.Json;
 using System.Runtime.InteropServices.Marshalling;
+using System.Text;
 
 
 namespace Pokedex.Services;
 
+
 public class PokedexApi : IPokedexApi
 {
-    public string Url = "https://pokeapi.co/api/v2/pokemon/?limit=20&offset=";
+    public string Url = "https://pokeapi.co/api/v2/pokemon/?limit=151&offset=0";
 
     public string UrlPokemon = "https://pokeapi.co/api/v2/pokemon/";
 
@@ -16,13 +18,151 @@ public class PokedexApi : IPokedexApi
 
     public string UrlImg = "https://img.pokemondb.net/artwork/";
 
+    public string UrlDb = "http://10.105.200.172:80/";
+
     HttpClient http = new HttpClient();
     private byte[]? _imgBytes;
+
+    //Chiamata API che aggiunge il pokemon dai preferiti
+    public async Task<bool> AddFavorite(PokemonModel pokemon)
+    {
+        // Crea un oggetto con le credenziali e lo serializza in JSON
+        var data = new { pokemon_id = pokemon.Id};
+        string json = JsonConvert.SerializeObject(data);
+        var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+        var token = await SecureStorage.GetAsync("authToken");
+        http.DefaultRequestHeaders.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+        
+        // Invia la richiesta POST all'API
+        var response = await http.PostAsync(UrlDb + "/add-favorite", content);
+
+        // Se la risposta � positiva
+        if (response.IsSuccessStatusCode)
+        {
+            // Aggiunto ai preferiti
+            return true;
+        }
+
+        // // Aggiunto ai preferiti fallito
+        return false;
+    }
+    
+    //Chiamata API che rimuove il pokemon dai preferiti
+    public async Task<bool> RemoveFavorite(PokemonModel pokemon)
+    {
+        // Crea un oggetto con le credenziali e lo serializza in JSON
+        var data = new { pokemon_id = pokemon.Id};
+        string json = JsonConvert.SerializeObject(data);
+        var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+        var token = await SecureStorage.GetAsync("authToken");
+        http.DefaultRequestHeaders.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+        
+        // Invia la richiesta POST all'API
+        var response = await http.PostAsync(UrlDb + "/remove-favorite", content);
+
+        // Se la risposta � positiva
+        if (response.IsSuccessStatusCode)
+        {
+            // Rimosso dai preferiti
+            return true;
+        }
+
+        // // Rimosso dai preferiti fallito
+        return false;
+    }
+
+    //Chiamata API che rtorna id dei pokemon preferiti
+    public async Task<List<int>> GetFavorites()
+    {
+        var token = await SecureStorage.GetAsync("authToken");
+        http.DefaultRequestHeaders.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+        
+        var response = await http.GetAsync(UrlDb + "/favorites");
+
+        // Se la risposta � positiva
+        if (response.IsSuccessStatusCode)
+        {
+            string responseContent = await response.Content.ReadAsStringAsync();
+            
+            return JsonConvert.DeserializeObject<List<int>>(responseContent);
+        }
+        
+        return new List<int>();
+    }
+    
+    //Chiamata Api che ritorna se login è avvenuto con successo o meno
+    public async Task<bool> GetLogin(string username, string password)
+    {
+        // Crea un oggetto con le credenziali e lo serializza in JSON
+        var credentials = new { username, password };
+        string json = JsonConvert.SerializeObject(credentials);
+        var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+        // Invia la richiesta POST all'API
+        var response = await http.PostAsync(UrlDb + "login", content);
+
+        // Se la risposta � positiva
+        if (response.IsSuccessStatusCode)
+        {
+            var responseContent = await response.Content.ReadAsStringAsync();
+
+            // Deserializza la risposta dell'API
+            var result = JsonConvert.DeserializeObject<LoginApiModel>(responseContent);
+
+            // Salva il token per restare connesso
+            await SecureStorage.SetAsync("authToken", result.Token);
+
+            // Salva nome utente
+            await SecureStorage.SetAsync("username", username);
+
+            // Login riuscito
+            return true;
+        }
+
+        // Login fallito
+        return false;
+    }
+
+    //Chiamata Api che ritorna se la registrazione è avvenuto con successo o meno
+    public async Task<bool> GetRegister(string username, string password)
+    {
+        var credentials = new { username, password };
+        string json = JsonConvert.SerializeObject(credentials);
+        var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+        var response = await http.PostAsync(UrlDb + "register", content);
+
+        if (response.IsSuccessStatusCode)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    //Chiamata Api che ritorna se il token è valido o meno
+    public async Task<bool> VerifyToken(string token)
+    {
+        http.DefaultRequestHeaders.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+        var response = await http.GetAsync(UrlDb + "verify-token");
+
+        // Considera valido il token se il server restituisce 200 OK
+        return response.IsSuccessStatusCode;
+    }
 
     //Chiamata Api che ritorna la lista dei pokemon 
     public async Task<List<PokemonModel>> GetPokemon(int offset)
     {
-        var response = await http.GetAsync(Url + offset.ToString());
+        var response = await http.GetAsync(Url);
         List<PokemonModel> _listPokemon = new List<PokemonModel>();
 
         if (response.IsSuccessStatusCode)

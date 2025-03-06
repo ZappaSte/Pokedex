@@ -2,8 +2,11 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Pokedex.Views.LoginPage">
-    <StackLayout VerticalOptions="CenterAndExpand" Padding="20">
-        <Label Text="Gotta Catch 'Em All" FontSize="30" FontAttributes="Bold" HorizontalOptions="Center" FontFamily="Super Morning"/>
+    <StackLayout VerticalOptions="Center" Padding="20">
+        <Image Source="pokemon.png"
+               VerticalOptions="Center"
+               HorizontalOptions="Center"
+               HeightRequest="80"/>
 
         <!-- Username -->
         <Entry x:Name="Username" Placeholder="Username" HorizontalOptions="Center" HorizontalTextAlignment="Center" FontSize="18" Margin="0,20,0,0" />
@@ -20,7 +23,7 @@
                 Clicked="OnRegisterButtonClickedAsync" Background="Blue"/>
 
         <!-- Errore visibile se pwd e username sono errati -->
-        <Label x:Name="ErrorLabel" Text="" TextColor="Red" IsVisible="False"
+        <Label x:Name="ErrorLabel" Text="{Binding Error}" TextColor="Red" IsVisible="False"
                HorizontalOptions="Center" FontSize="20" Margin="0,20" FontAttributes="Bold"/>
     </StackLayout>
 </ContentPage>

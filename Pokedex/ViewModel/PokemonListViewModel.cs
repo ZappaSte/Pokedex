@@ -14,8 +14,9 @@ public class PokemonListViewModel : INotifyPropertyChanged
     public event PropertyChangedEventHandler PropertyChanged;
 
     private bool _isBusy = false; //Controllo per vedere se non è gia stata effettuata la chiamata per visualizzare altri pokemon
-    private bool _isFirst = true; //Controllo se è òla prima chiamata che effettuo o meno
+    private bool _isFirst = true; //Controllo se è la prima chiamata che effettuo o meno
     private int _set = 0; //Contatore che si incrementa per visualizzare i pokemon 20 alla volta
+
 
     private ObservableCollection<PokemonModel> _modelList = [];
     public ObservableCollection<PokemonModel> ModelList
@@ -69,14 +70,25 @@ public class PokemonListViewModel : INotifyPropertyChanged
             OnPropertyChanged(nameof(NotLoad));
         }
     }
-
-
+    
+    private string _message = "";
+    public string Message
+    {
+        get { return _message; }
+        set
+        {
+            _message = value;
+            OnPropertyChanged(nameof(Message));
+        }
+    }
+    
     public PokemonListViewModel()
     {
         _ = GetPokemon();
         _ = GetTypes();
     }
-
+    
+    
     //Funzione che ritorna la lista di pokemon con l'aggiunta di alcuni dettagli
     public async Task GetPokemon()
     {
@@ -97,6 +109,7 @@ public class PokemonListViewModel : INotifyPropertyChanged
                         var pokemon = await App.GetPokemonApi().GetTypesPokemon(p);
                         if (pokemon.Types != null)
                         {
+                            //Codice per salvare nella cache dell'app le immagine dei pokemon ma blocca l'app
                             // var _imgBytes = await App.GetPokemonApi().SaveAndGetImgPokemon(p);
 
                             // //Percorso dei file nella cache
@@ -116,9 +129,15 @@ public class PokemonListViewModel : INotifyPropertyChanged
                             // //Recupero l'image
                             // var stream = new MemoryStream(_imgBytes);
                             // pokemon.Img = ImageSource.FromStream(() => stream);
-                            
+
                             // if (pokemon.Img != null)
+                            
                             ModelList.Add(pokemon);
+                        }
+
+                        if (p.Id.Equals("10"))
+                        {
+                            ModelListTemp = ModelList;
                         }
                     }
 
@@ -169,21 +188,22 @@ public class PokemonListViewModel : INotifyPropertyChanged
     {
         try
         {
-            int selectedOption = type;
             ModelListTemp = ModelList;
 
-            if (selectedOption == 0)
             {
-                ModelListTemp = ModelList;
-                return;
-            }
-            else
-            {
-                string select = TypeNames[selectedOption];
-                //Controllo la lista di Pokemon e controllo se all'interno dei tipi � presente la tipologia selezionata
-                ModelListTemp = new ObservableCollection<PokemonModel>(
-                    _modelList.Where(p => p.TypeList.Any(t => t.Type.Name.Equals(select, StringComparison.OrdinalIgnoreCase))).ToList());
-                return;
+                if (type == 0)
+                {
+                    ModelListTemp = ModelList;
+                    return;
+                }
+                else
+                {
+                    string select = TypeNames[type];
+                    //Controllo la lista di Pokemon e controllo se all'interno dei tipi � presente la tipologia selezionata
+                    ModelListTemp = new ObservableCollection<PokemonModel>(
+                        _modelList.Where(p => p.TypeList.Any(t => t.Type.Name.Equals(select, StringComparison.OrdinalIgnoreCase))).ToList());
+                    return;
+                }
             }
         }
         catch (Exception ex)
@@ -200,6 +220,62 @@ public class PokemonListViewModel : INotifyPropertyChanged
             _modelList.Where(t => t.Name.Contains(text)).ToList());
     }
 
+    //Funzione di ricerca che visualizza solo la lista dei pokemon preferiti
+    public async Task CheckedChanged(bool checkedValue)
+    {
+        if (checkedValue)
+        {
+            var result = await App.GetPokemonApi().GetFavorites();
+            if (result.Count != 0)
+            {
+                var temp = new List<PokemonModel>();
+                foreach (var i in result)
+                {
+                    temp.AddRange(_modelList.Where(t => t.Id == i.ToString()).ToList());
+                }
+
+                ModelListTemp = new ObservableCollection<PokemonModel>(temp);
+                
+            }
+            else
+            {
+                ModelListTemp = [];
+            }
+            
+        }
+        else
+        {
+            ModelListTemp = ModelList;
+        }
+    }
+
+    //Funzione che aggiunge i pokemon ai preferiti
+    public async Task AddFavoriteUpdate(PokemonModel pokemon)
+    {
+        var result = await App.GetPokemonApi().AddFavorite(pokemon);
+        if (result)
+        {
+            Message = pokemon.Name + " add favorite";
+            await Task.Delay(3000);
+            Message = "";
+        }
+        
+    }
+    
+    //Funzione che rimuove i pokemon ai preferiti
+    public async Task RemoveFavoriteUpdate(PokemonModel pokemon)
+    {
+        var result = await App.GetPokemonApi().RemoveFavorite(pokemon);
+        if (result)
+        {
+            Message = pokemon.Name + " remove favorite";
+            await CheckedChanged(true);
+            await Task.Delay(3000);
+            Message = "";await App.GetPokemonApi().GetPokemon(_set);
+        }
+        
+    }
+    
     public void OnPropertyChanged([CallerMemberName] string name = "") =>
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 

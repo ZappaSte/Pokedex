@@ -18,5 +18,9 @@
         <!-- Bottone per confermare la registrazione -->
         <Button Text="REGISTER" FontSize="20" FontAttributes="Bold" Margin="0,20" 
                 Clicked="OnRegisterButtonClicked" Background="Green"/>
+        
+        <!-- Errore registrazione non eseguita -->
+        <Label x:Name="ErrorLabel" Text="{Binding Error}" TextColor="Red" IsVisible="False"
+               HorizontalOptions="Center" FontSize="20" Margin="0,20" FontAttributes="Bold"/>
     </StackLayout>
 </ContentPage>
